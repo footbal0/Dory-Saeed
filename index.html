@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إحصائيات اللاعبين</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-image: url('https://images.pexels.com/photos/2193/black-and-white-sport-round-sporty.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #2196F3;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        input[type="number"], input[type="text"], input[type="button"] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .checkbox {
+            cursor: pointer;
+        }
+        .edit-button, .save-button, .delete-button, .sort-button, .return-button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .edit-button {
+            background-color: #2196F3;
+        }
+        .save-button, .delete-button {
+            background-color: #f44336;
+        }
+        .sort-button {
+            background-color: #ff9800;
+        }
+        .return-button {
+            background-color: #2196F3;
+        }
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+        }
+        .login-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                margin: 0;
+            }
+            table {
+                font-size: 12px;
+            }
+        }
+        #userContent table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        #userContent th, #userContent td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        #userContent th {
+            background-color: #2196F3;
+            color: white;
+        }
+        #userContent tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        #userContent tr:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        #userContent th:nth-child(1), #userContent td:nth-child(1) {
+            text-align: right;
+        }
+        #userContent th:nth-child(2), #userContent td:nth-child(2) {
+            text-align: left;
+        }
+        #userContent th:nth-child(3), #userContent td:nth-child(3) {
+            text-align: center;
+        }
+        .editable {
+            background-color: #ffffe0;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .checkbox-label input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <h2>الرجاء إدخال كلمة المرور</h2>
+        <input type="password" id="passwordInput" placeholder="كلمة المرور">
+        <button onclick="checkPassword()">تسجيل الدخول</button>
+    </div>
+</div>
+
+<div id="adminContent" style="display: none;">
+    <h2>مخطط إحصائيات اللاعبين (Admin View)</h2>
+    <button class="sort-button" onclick="sortPlayers('points')">ترتيب حسب النقاط</button>
+    <button class="sort-button" onclick="sortPlayers('name')">ترتيب حسب الاسم</button>
+    <button class="return-button" onclick="returnToLogin()">العودة لصفحة التسجيل</button>
+    <table>
+        <thead>
+            <tr>
+                <th>اسم اللاعب</th>
+                <th>الأهداف المسجلة</th>
+                <th>الأهداف المساعدة</th>
+                <th>أفضل حارس</th>
+                <th>أفضل مدافع</th>
+                <th>كرت أصفر</th>
+                <th>كرت أحمر</th>
+                <th>إجمالي النقاط</th>
+                <th>إجراء</th>
+            </tr>
+        </thead>
+        <tbody id="playerTable">
+            <!-- يمكن إضافة اللاعبين هنا -->
+        </tbody>
+    </table>
+    <button id="addPlayer" onclick="addPlayer()">إضافة لاعب</button>
+    <button class="edit-button" onclick="toggleEdit()">تعديل</button>
+    <button class="save-button" onclick="saveData()">حفظ البيانات</button>
+</div>
+
+<div id="userContent" style="display: none;">
+    <h2>إحصائيات اللاعبين (User View)</h2>
+    <button class="return-button" onclick="returnToLogin()">العودة لصفحة التسجيل</button>
+    <table>
+        <thead>
+            <tr>
+                <th>الترتيب</th>
+                <th>اسم اللاعب</th>
+                <th>إجمالي النقاط</th>
+            </tr>
+        </thead>
+        <tbody id="userTable">
+            <!-- سيتم ملء هذا الجدول ديناميكيًا -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const adminPassword = "753245"; // حدد كلمة المرور هنا
+    const userPassword = "907258"; // حدد كلمة المرور هنا
+
+    function checkPassword() {
+        const inputPassword = document.getElementById('passwordInput').value;
+        if (inputPassword === adminPassword) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+        } else if (inputPassword === userPassword) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('userContent').style.display = 'block';
+            updateUserTable(); // تحديث جدول المستخدم
+        } else {
+            alert('كلمة المرور غير صحيحة');
+        }
+    }
+
+    function returnToLogin() {
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('adminContent').style.display = 'none';
+        document.getElementById('userContent').style.display = 'none';
+    }
+
+    function addPlayer() {
+        const table = document.getElementById('playerTable');
+        const newRow = table.insertRow();
+        newRow.innerHTML = `
+            <td><input type="text" placeholder="اسم اللاعب"></td>
+            <td><input type="number" placeholder="الأهداف المسجلة" value="0"></td>
+            <td><input type="number" placeholder="الأهداف المساعدة" value="0"></td>
+            <td><input type="checkbox" class="checkbox" onclick="updatePoints(this)"> </td>
+            <td><input type="checkbox" class="checkbox" onclick="updatePoints(this)"> </td>
+            <td><input type="checkbox" class="checkbox" onclick="updatePoints(this)"> </td>
+            <td><input type="checkbox" class="checkbox" onclick="updatePoints(this)"> </td>
+            <td class="readonly">0</td>
+            <td><button class="delete-button" onclick="deleteRow(this)">حذف</button></td>
+        `;
+    }
+
+    function deleteRow(button) {
+        const row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        updateUserTable(); // تحديث جدول المستخدم بعد الحذف
+    }
+
+    function toggleEdit() {
+        const inputs = document.querySelectorAll('#playerTable input');
+        inputs.forEach(input => {
+            input.disabled = !input.disabled;
+        });
+    }
+
+    function saveData() {
+        const rows = document.querySelectorAll('#playerTable tr');
+        rows.forEach(row => {
+            let totalPoints = calculatePoints(row);
+            row.cells[7].innerText = totalPoints;
+        });
+        alert('تم حفظ البيانات');
+        updateUserTable();
+    }
+
+    function calculatePoints(row) {
+        const goals = parseInt(row.cells[1].querySelector('input').value) || 0;
+        const assists = parseInt(row.cells[2].querySelector('input').value) || 0;
+        const bestKeeper = row.cells[3].querySelector('input').checked ? 5 : 0;
+        const bestDefender = row.cells[4].querySelector('input').checked ? 4 : 0;
+        const yellowCard = row.cells[5].querySelector('input').checked ? 1 : 0;
+        const redCard = row.cells[6].querySelector('input').checked ? 1 : 0;
+
+        let matchPoints = goals * 2 + assists * 1 + bestKeeper + bestDefender - yellowCard * 1 - redCard * 3;
+        return matchPoints;
+    }
+
+    function updateUserTable() {
+        const userTable = document.getElementById('userTable');
+        userTable.innerHTML = '';
+
+        const rows = Array.from(document.getElementById('playerTable').rows);
+        const playerPoints = {};
+
+        rows.forEach((row) => {
+            const playerName = row.cells[0].querySelector('input').value;
+            const totalPoints = parseInt(row.cells[7].innerText) || 0;
+
+            if (!playerPoints[playerName]) {
+                playerPoints[playerName] = 0;
+            }
+            playerPoints[playerName] += totalPoints;
+        });
+
+        const sortedPlayers = Object.keys(playerPoints)
+            .map(name => ({ name, points: playerPoints[name] }))
+            .sort((a, b) => b.points - a.points);
+
+        sortedPlayers.forEach((player, index) => {
+            const userRow = document.createElement('tr');
+            userRow.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${player.name}</td>
+                <td>${player.points}</td>
+            `;
+            userTable.appendChild(userRow);
+        });
+    }
+
+    function sortPlayers(criteria) {
+        const table = document.getElementById('playerTable');
+        const rows = Array.from(table.rows);
+        rows.sort((a, b) => {
+            if (criteria === 'points') {
+                return parseInt(b.cells[7].innerText) - parseInt(a.cells[7].innerText);
+            } else if (criteria === 'name') {
+                return a.cells[0].querySelector('input').value.localeCompare(b.cells[0].querySelector('input').value);
+            }
+        });
+        rows.forEach(row => table.appendChild(row));
+        updateUserTable(); // تحديث جدول المستخدم بعد الفرز
+    }
+</script>
+
+</body>
+</html>
