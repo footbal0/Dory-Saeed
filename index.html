@@ -79,7 +79,7 @@
             cursor: pointer;
             font-size: 16px;
             background-color: rgba(0, 0, 0, 0.804);
-            transition: backgr 0.3s; /* انتقال سلس لتغيير اللون */
+            transition: background-color 0.3s; /* انتقال سلس لتغيير اللون */
         }
 
         /* أزرار الإدارة */
@@ -201,6 +201,7 @@
         if (inputPassword === adminPassword) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminContent').style.display = 'block';
+            loadAdminData(); // تحميل بيانات الإدارة عند تسجيل الدخول
         } else if (inputPassword === userPassword) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('userContent').style.display = 'block';
@@ -332,6 +333,28 @@
         });
         rows.forEach(row => table.appendChild(row));
         saveData(); // حفظ البيانات بعد الفرز
+    }
+
+    function loadAdminData() {
+        const table = document.getElementById('playerTable');
+        const playerData = JSON.parse(localStorage.getItem('playerData')) || [];
+        
+        table.innerHTML = ''; // مسح الجدول الحالي
+
+        playerData.forEach(player => {
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td><input type="text" value="${player.name}"></td>
+                <td><input type="number" value="${player.goals}"></td>
+                <td><input type="number" value="${player.assists}"></td>
+                <td><input type="checkbox" ${player.bestKeeper ? 'checked' : ''}></td>
+                <td><input type="checkbox" ${player.bestDefender ? 'checked' : ''}></td>
+                <td><input type="checkbox" ${player.yellowCard ? 'checked' : ''}></td>
+                <td><input type="checkbox" ${player.redCard ? 'checked' : ''}></td>
+                <td class="readonly">${player.totalPoints}</td>
+                <td><button class="delete-button" onclick="deleteRow(this)">حذف</button></td>
+            `;
+        });
     }
 
     // تحميل البيانات عند فتح الصفحة
